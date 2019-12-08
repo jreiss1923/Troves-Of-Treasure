@@ -1,15 +1,18 @@
 import requests
 
 headers = {
-    'header': 'application/x-www-form-urlencoded'
+    "Accept": "application/json",
+    "Authorization": "bearer JijuljIEFOaaV2CIU7cpXc_uODdf0euxYhOGolYFlY8Ivqiz4nbnGcHZxwSbvav10ElZx7pQfvO4DnZ0qD1UnL3xc5l2uQP3xUBGp4U_Av35LhZlUH3S2sqVUN5XSxU5g6EhjAHyZPT1WqsXD_bet7vD48la6cLB0E-verohCqtERHVjXFQtFRut_gXmJrmESYP9vq4WH5sTPWbactvev7AvV2g7SF6hGix-yhXxR2SbgVyAWmTtsrlKM52mEB3SZaGVvdaEAbKGV-AtXmjpjymAsgvlYErcraSWiqOcwHQOj6rGKCprIRIs_pIw8-4cw9C1_A"
 }
 
-header = "http://application/x-www-form-urlencoded"
-PUBLIC_KEY = '682B81DB-4A64-4381-91B5-CD9A26D34D26'
-PRIVATE_KEY = "69BDD4FE-FE4F-4A2C-964F-BC23B73FD746"
+#headers = {
+#    'app': 'application/x-www-form-urlencoded',
+#}
 
 data = 'grant_type=client_credentials&client_id=' + PUBLIC_KEY + '&client_secret=' + PRIVATE_KEY
+bearer_token = "JijuljIEFOaaV2CIU7cpXc_uODdf0euxYhOGolYFlY8Ivqiz4nbnGcHZxwSbvav10ElZx7pQfvO4DnZ0qD1UnL3xc5l2uQP3xUBGp4U_Av35LhZlUH3S2sqVUN5XSxU5g6EhjAHyZPT1WqsXD_bet7vD48la6cLB0E-verohCqtERHVjXFQtFRut_gXmJrmESYP9vq4WH5sTPWbactvev7AvV2g7SF6hGix-yhXxR2SbgVyAWmTtsrlKM52mEB3SZaGVvdaEAbKGV-AtXmjpjymAsgvlYErcraSWiqOcwHQOj6rGKCprIRIs_pIw8-4cw9C1_A"
 
-response = requests.post('https://api.tcgplayer.token', headers=headers, data = data)
+#response = requests.post('https://api.tcgplayer.com/token', headers=headers, data=data)
+response = requests.get("http://api.tcgplayer.com/v1.32.0/catalog/categories", headers=headers)
 
 print(response.text)
