@@ -1,4 +1,6 @@
 import requests
+import sys
+import json
 
 headers = {
     "Accept": "application/json",
@@ -9,13 +11,28 @@ def search_card_prices(cardString):
     params = {
         "productName": cardString
     }
-    product_prices = []
+    s = ""
     response = requests.get("http://api.tcgplayer.com/v1.32.0/catalog/products", headers=headers, params=params).json()
     for i in range(len(response["results"])):
-        product_prices.append(response["results"][i]["productId"])
+        s += str(response["results"][i]["productId"]) + ","
 
-def price_of_card(cardId):
-    print("hi")
+    response = requests.get("http://api.tcgplayer.com/v1.32.0/pricing/product/" + s[:len(s) - 1], headers=headers).json()
+    prices = []
+    for i in range(len(response["results"])):
+        if(json.dumps(response["results"][i]["marketPrice"]) is not 'null'):
+            prices.append(float(json.dumps(response["results"][i]["marketPrice"])))
+
+    return low_price(prices)
+
+def low_price(prices):
+    x = sys.maxsize
+    for price in prices:
+        if x > price:
+            x = price
+
+    return x
+
+
 
 #def bearer_token(PUBLIC_KEY, PRIVATE_KEY):
     # bearer_headers = {
@@ -27,4 +44,4 @@ def price_of_card(cardId):
     # response = requests.post('https://api.tcgplayer.com/token', headers=bearer_headers, data=data)
     # bearer_token = response[whatever i have to get]
 
-search_card_prices("noble hierarch")
+print(search_card_prices("noble hierarch"))
