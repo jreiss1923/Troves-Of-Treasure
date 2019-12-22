@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `troves_of_treasure` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `troves_of_treasure`;
 -- MySQL dump 10.13  Distrib 8.0.17, for Win64 (x86_64)
 --
 -- Host: localhost    Database: troves_of_treasure
@@ -14,29 +16,6 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-
---
--- Table structure for table `cards`
---
-
-DROP TABLE IF EXISTS `cards`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `cards` (
-  `card_id` int(11) NOT NULL,
-  `card_name` varchar(200) NOT NULL,
-  PRIMARY KEY (`card_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `cards`
---
-
-LOCK TABLES `cards` WRITE;
-/*!40000 ALTER TABLE `cards` DISABLE KEYS */;
-/*!40000 ALTER TABLE `cards` ENABLE KEYS */;
-UNLOCK TABLES;
 
 --
 -- Table structure for table `date_price_info`
@@ -78,7 +57,7 @@ CREATE TABLE `portfolio` (
   PRIMARY KEY (`id`),
   KEY `user_name` (`user_name`),
   CONSTRAINT `portfolio_ibfk_1` FOREIGN KEY (`user_name`) REFERENCES `user_info` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -87,7 +66,7 @@ CREATE TABLE `portfolio` (
 
 LOCK TABLES `portfolio` WRITE;
 /*!40000 ALTER TABLE `portfolio` DISABLE KEYS */;
-INSERT INTO `portfolio` VALUES ('infect',1,'jreiss1923'),('infect',2,'jreiss1923');
+INSERT INTO `portfolio` VALUES ('infect',1,'jreiss1923'),('infect',2,'jreiss1923'),('my cards',5,'jreiss1923'),('mycards',6,'jreiss1923'),('mycards',7,'jreiss1923'),('mycards',8,'jreiss1923'),('mycards',9,'jreiss1923'),('mycards',10,'jreiss1923'),('mycards',11,'jreiss1923'),('mycards',12,'jreiss1923'),('mycards',13,'jreiss1923'),('mycards',14,'jreiss1923'),('mycards',15,'jreiss1923'),('mycards',16,'jreiss1923'),('mycards',17,'jreiss1923'),('mycards',18,'jreiss1923'),('mycards',19,'jreiss1923'),('mycards',20,'jreiss1923'),('mycards',21,'jreiss1923'),('mycards',22,'jreiss1923'),('mycards',23,'jreiss1923'),('mycards',24,'jreiss1923'),('mycards',25,'jreiss1923'),('mycards',26,'jreiss1923'),('mycards',27,'jreiss1923'),('mycards',28,'jreiss1923'),('mycards',29,'jreiss1923'),('mycards',30,'jreiss1923');
 /*!40000 ALTER TABLE `portfolio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -102,10 +81,10 @@ CREATE TABLE `portfolio_card_assc` (
   `portfolio_id` int(11) NOT NULL,
   `card_id` int(11) NOT NULL,
   `card_count` int(11) DEFAULT NULL,
+  `foiled` tinyint(1) DEFAULT NULL,
   KEY `portfolio_id` (`portfolio_id`),
   KEY `card_id` (`card_id`),
-  CONSTRAINT `portfolio_card_assc_ibfk_1` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`),
-  CONSTRAINT `portfolio_card_assc_ibfk_2` FOREIGN KEY (`card_id`) REFERENCES `cards` (`card_id`)
+  CONSTRAINT `portfolio_card_assc_ibfk_1` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -115,6 +94,7 @@ CREATE TABLE `portfolio_card_assc` (
 
 LOCK TABLES `portfolio_card_assc` WRITE;
 /*!40000 ALTER TABLE `portfolio_card_assc` DISABLE KEYS */;
+INSERT INTO `portfolio_card_assc` VALUES (17,28579,4,0),(13,28579,4,1);
 /*!40000 ALTER TABLE `portfolio_card_assc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -152,4 +132,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-12-18 17:22:48
+-- Dump completed on 2019-12-21 20:28:11
