@@ -5,7 +5,7 @@ import mysql.connector
 
 headers = {
     "Accept": "application/json",
-    "Authorization": "bearer JijuljIEFOaaV2CIU7cpXc_uODdf0euxYhOGolYFlY8Ivqiz4nbnGcHZxwSbvav10ElZx7pQfvO4DnZ0qD1UnL3xc5l2uQP3xUBGp4U_Av35LhZlUH3S2sqVUN5XSxU5g6EhjAHyZPT1WqsXD_bet7vD48la6cLB0E-verohCqtERHVjXFQtFRut_gXmJrmESYP9vq4WH5sTPWbactvev7AvV2g7SF6hGix-yhXxR2SbgVyAWmTtsrlKM52mEB3SZaGVvdaEAbKGV-AtXmjpjymAsgvlYErcraSWiqOcwHQOj6rGKCprIRIs_pIw8-4cw9C1_A"
+    "Authorization": "bearer Z53dHTfmNTrZBij1Uc6LFvWJB2WU3jkrJRtonAR82G1m48246YvgdyrYtHaf0GVS6UZ_O9Gz4_SBkPWS3pNguvMF8P9q3T95-diC9SJObmN-9o9pxcEBo0LdHdFWx1nPrN4M8m0hYeKXZkZvb5W9_BYtV0q46xanbwVgi3ZtHsIHkvFloLG8yWg4f-eLYIiuJXKZZkuSHdzoX-HGNHyrrWnSk_WhwB_cejVp1SKAudzcQV5-MB-gimuSj0Iqck981BXGU3i5xUj62snOEFewM8Ma6T3-K_hwEsnp0mDedB9CiDCiLNC0sxyYxZBpkDmei0BaaQ"
 }
 
 mydb = mysql.connector.connect(
@@ -18,6 +18,16 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 current_user_table = 0
+
+def bearer_token(PUBLIC_KEY, PRIVATE_KEY):
+    bearer_headers = {
+        'app': 'application/x-www-form-urlencoded',
+    }
+
+    data = 'grant_type=client_credentials&client_id=' + PUBLIC_KEY + '&client_secret=' + PRIVATE_KEY
+
+    response = requests.post('https://api.tcgplayer.com/token', headers=bearer_headers, data=data).json()
+    print(response)
 
 def search_card(cardString):
     params = {
@@ -130,16 +140,31 @@ def add_card(card_id, foiled, num_cards):
     mycursor.execute("insert into portfolio_card_assc(portfolio_id, card_id, card_count, foiled) values(" + str(current_user_table) + "," + str(card_id) + "," + str(num_cards) + "," + str(foiled) + ")")
     mydb.commit()
 
-change_portfolio("jreiss1923", "")
-get_card_info("Noble Hierarch")
-add_card(28579, True, 4)
-#def bearer_token(PUBLIC_KEY, PRIVATE_KEY):
-    # bearer_headers = {
-    #    'app': 'application/x-www-form-urlencoded',
-    # }
+def update_portfolios(username):
+    mycursor.execute("select id from portfolio where user_name = '" + username + "'")
+    portfolio_ids = mycursor.fetchall()
 
-    # data = 'grant_type=client_credentials&client_id=' + PUBLIC_KEY + '&client_secret=' + PRIVATE_KEY
+    list_of_ids = []
 
-    # response = requests.post('https://api.tcgplayer.com/token', headers=bearer_headers, data=data)
-    # bearer_token = response[whatever i have to get]
+    for x in portfolio_ids:
+        list_of_ids.append(x[0])
+
+    list_of_portfolio_cards = []
+    for id in list_of_ids:
+        mycursor.execute("select card_id, card_count, foiled from portfolio_card_assc where portfolio_id = " + str(id))
+        list_of_portfolio_cards.append(mycursor.fetchall())
+
+    portfolio_prices = get_portfolio_prices(list_of_portfolio_cards)
+
+def get_portfolio_prices(cards):
+    portfolio_prices = [0] * len(cards)
+    print(len(cards))
+    for portfolio_tuples in cards:
+        if len(portfolio_tuples) != 0:
+            price = 0
+            print(cards.index(portfolio_tuples))
+            for portfolio_tuple in portfolio_tuples:
+                print(get_card_prices(str(portfolio_tuple[0]) + ","))
+
+update_portfolios("jreiss1923")
 
