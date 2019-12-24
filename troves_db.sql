@@ -26,9 +26,8 @@ DROP TABLE IF EXISTS `date_price_info`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `date_price_info` (
   `date_of_price` date NOT NULL,
-  `price` int(11) DEFAULT NULL,
+  `price` float DEFAULT NULL,
   `portfolio_id` int(11) DEFAULT NULL,
-  PRIMARY KEY (`date_of_price`),
   KEY `portfolio_id` (`portfolio_id`),
   CONSTRAINT `date_price_info_ibfk_1` FOREIGN KEY (`portfolio_id`) REFERENCES `portfolio` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
@@ -40,6 +39,7 @@ CREATE TABLE `date_price_info` (
 
 LOCK TABLES `date_price_info` WRITE;
 /*!40000 ALTER TABLE `date_price_info` DISABLE KEYS */;
+INSERT INTO `date_price_info` VALUES ('2019-12-24',324,13),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17);
 /*!40000 ALTER TABLE `date_price_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,7 +94,7 @@ CREATE TABLE `portfolio_card_assc` (
 
 LOCK TABLES `portfolio_card_assc` WRITE;
 /*!40000 ALTER TABLE `portfolio_card_assc` DISABLE KEYS */;
-INSERT INTO `portfolio_card_assc` VALUES (17,28579,4,0),(13,28579,4,1);
+INSERT INTO `portfolio_card_assc` VALUES (17,28579,4,0),(13,28579,4,1),(17,28579,4,1);
 /*!40000 ALTER TABLE `portfolio_card_assc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -132,4 +132,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-12-21 20:28:11
+-- Dump completed on 2019-12-24 15:33:48

@@ -1,7 +1,8 @@
 import requests
-import sys
 import schedule
 import mysql.connector
+import datetime
+import time
 
 headers = {
     "Accept": "application/json",
@@ -54,6 +55,9 @@ def get_card_prices(resultString):
 
     return prices
 
+def get_card_prices_no_comma(resultString):
+    return get_card_prices(resultString + ",")
+
 def card_foiling(resultString):
     response = requests.get("http://api.tcgplayer.com/v1.32.0/pricing/product/" + resultString[:len(resultString) - 1], headers=headers).json()
     foiled = []
@@ -65,14 +69,8 @@ def card_foiling(resultString):
 
     return foiled
 
-
-def low_price(prices):
-    x = sys.maxsize
-    for price in prices:
-        if x > price:
-            x = price
-
-    return x
+def card_foiling_no_comma(resultString):
+    return card_foiling(resultString + ",")
 
 def get_user(username, password):
     global current_user_table
@@ -136,10 +134,22 @@ def get_group_names(groupIdStr):
         set_arr[group_ids.index(str(x['groupId']))] = x['name']
     return set_arr
 
+
+#add card to current portfolio
 def add_card(card_id, foiled, num_cards):
     mycursor.execute("insert into portfolio_card_assc(portfolio_id, card_id, card_count, foiled) values(" + str(current_user_table) + "," + str(card_id) + "," + str(num_cards) + "," + str(foiled) + ")")
     mydb.commit()
 
+
+#updating portfolio function that runs daily
+def update_portfolios_for_all_users():
+    mycursor.execute("select username from user_info")
+    usernames = mycursor.fetchall()
+
+    for username in usernames:
+        update_portfolios(username[0])
+
+#update portfolio for one user
 def update_portfolios(username):
     mycursor.execute("select id from portfolio where user_name = '" + username + "'")
     portfolio_ids = mycursor.fetchall()
@@ -149,22 +159,39 @@ def update_portfolios(username):
     for x in portfolio_ids:
         list_of_ids.append(x[0])
 
-    list_of_portfolio_cards = []
+    portfolio_prices = {}
     for id in list_of_ids:
         mycursor.execute("select card_id, card_count, foiled from portfolio_card_assc where portfolio_id = " + str(id))
-        list_of_portfolio_cards.append(mycursor.fetchall())
+        portfolio_prices[id] = mycursor.fetchall()
 
-    portfolio_prices = get_portfolio_prices(list_of_portfolio_cards)
+    total_prices = get_portfolio_prices(portfolio_prices)
+    for key in total_prices:
+        today = datetime.datetime.today()
+        today_formatted = today.strftime('%Y-%m-%d')
+        mycursor.execute("insert into date_price_info(date_of_price, price, portfolio_id) values('" + today_formatted + "'," + str(total_prices[key]) + "," + str(key) + ")")
+        mydb.commit()
 
+#returns price data for portfolios
 def get_portfolio_prices(cards):
-    portfolio_prices = [0] * len(cards)
-    print(len(cards))
-    for portfolio_tuples in cards:
-        if len(portfolio_tuples) != 0:
+    portfolio_prices = {}
+    for key in cards:
+        if len(cards[key]) != 0:
             price = 0
-            print(cards.index(portfolio_tuples))
-            for portfolio_tuple in portfolio_tuples:
-                print(get_card_prices(str(portfolio_tuple[0]) + ","))
+            for portfolio_tuple in cards[key]:
+                if(portfolio_tuple[2] == 0):
+                    correct_pos = card_foiling_no_comma(str(portfolio_tuple[0])).index(False)
+                else:
+                    correct_pos = card_foiling_no_comma(str(portfolio_tuple[0])).index(True)
+                price += get_card_prices_no_comma(str(portfolio_tuple[0]))[correct_pos] * portfolio_tuple[1]
+            portfolio_prices[key] = price
+
+    return portfolio_prices
 
 update_portfolios("jreiss1923")
+update_portfolios_for_all_users()
+schedule.every().day.at("07:00").do(update_portfolios_for_all_users)
+
+while True:
+    schedule.run_pending()
+    time.sleep(1)
 
