@@ -84,9 +84,14 @@ def get_user(username, password):
         return True
     return False
 
-def create_portfolio(username, name):
-    mycursor.execute("insert into portfolio(name, user_name) values ('" + name + "', '" + username + "')")
+def create_portfolio(name):
+    global current_user
+    mycursor.execute("insert into portfolio(name, user_name) values ('" + name + "', '" + current_user + "')")
     mydb.commit()
+
+def create_portfolio_prompt():
+    name = input("What is the name of your portfolio?")
+    create_portfolio(name)
 
 def change_portfolio(username, name):
     global current_user_table
@@ -110,6 +115,11 @@ def change_portfolio(username, name):
     chosen_id = input("Which portfolio id would you like to use?")
     current_user_table = int(chosen_id)
 
+def change_portfolio_prompt():
+    global current_user
+    name = input("What is the name of the portfolio you would like to change to?")
+    change_portfolio(current_user, name)
+
 def read_portfolio():
     mycursor.execute("select * from portfolio_card_assc where portfolio_id = " + str(current_user_table))
     cards = mycursor.fetchall()
@@ -119,10 +129,9 @@ def read_portfolio():
             response = requests.get("http://api.tcgplayer.com/v1.32.0/catalog/products/" + str(x[1]), headers=headers).json()
             card_name = response['results'][0]['name']
             if(x[3] == 0):
-                print("There are " + str(x[2]) + " nonfoil copies of " + card_name + " in the portfolio")
+                print("There are " + str(x[2]) + " nonfoil copies of " + card_name + " (card id " + str(x[1]) + ")" + " in the portfolio")
             else:
-                print("There are " + str(x[2]) + " foil copies of " + card_name + " in the portfolio")
-
+                print("There are " + str(x[2]) + " foil copies of " + card_name + " (card id " + str(x[1]) + ")" + " in the portfolio")
 
 def get_card_info(card_name):
     card_info = search_card(card_name)
@@ -149,12 +158,50 @@ def get_group_names(groupIdStr):
         set_arr[group_ids.index(str(x['groupId']))] = x['name']
     return set_arr
 
-
 #add card to current portfolio
 def add_card(card_id, foiled, num_cards):
     mycursor.execute("insert into portfolio_card_assc(portfolio_id, card_id, card_count, foiled) values(" + str(current_user_table) + "," + str(card_id) + "," + str(num_cards) + "," + str(foiled) + ")")
     mydb.commit()
 
+def add_card_prompt():
+    card = input("What is the name of the card?")
+    get_card_info(card)
+    id = input("Which card version would you like to use?")
+    foiled = input("Is the card foil or nonfoil? Enter f for foil and n for nonfoil.")
+    if foiled == "f":
+        foiled = True
+    else:
+        foiled = False
+    num = input("How many cards of this type do you want to add to your portfolio?")
+    add_card(id, foiled, num)
+
+def delete_card(card_id, foiled, num_cards):
+    global current_user_table
+    mycursor.execute("delete from portfolio_card_assc where portfolio_id =" + str(current_user_table) + " and card_id =" + str(card_id) + " and card_count = " + str(num_cards) + " and foiled = " + str(foiled) + " limit 1")
+    mydb.commit()
+
+def delete_card_prompt():
+    read_portfolio()
+    card_id = input("Which card id would you like to delete from the portfolio?")
+    num_cards = input("How many cards are associated with this card id?")
+    foiled = input("Are these cards foil or nonfoil? Enter f for foil and n for nonfoil")
+    if foiled == "f":
+        foiled = True
+    else:
+        foiled = False
+    delete_card(card_id, foiled, num_cards)
+
+def delete_portfolio(portfolio_id):
+    mycursor.execute("delete from portfolio where id = " + str(portfolio_id) + " limit 1")
+    mydb.commit()
+
+def delete_portfolio_prompt():
+    id = input("Which portfolio id would you like to delete? Press c if you would like to look at the portfolio you wish to delete.")
+    if id == "c":
+        change_portfolio_prompt()
+        delete_portfolio_prompt()
+    else:
+        delete_portfolio(id)
 
 #updating portfolio function that runs daily
 def update_portfolios_for_all_users():
@@ -212,7 +259,7 @@ def login_or_signup(username, password):
     else:
         response = input("The username or password was incorrect. Enter t to try again, or enter s to sign up.")
         if(response == "t"):
-            start_function()
+            login_or_signup_prompt()
         elif(response == "s"):
             username = input("Please choose a username")
             password = input("Please choose a password")
@@ -220,17 +267,46 @@ def login_or_signup(username, password):
             mycursor.execute("insert into user_info(username, password, email) values('" + username + "', md5('" + password + "'), '" + email + "')")
             mydb.commit()
 
-def start_function():
+def login_or_signup_prompt():
     username = input("Please input your username")
     password = input("Please input your password")
     login_or_signup(username, password)
 
+def choose_option_prompt():
+    print("a: Add card")
+    print("d: Delete card")
+    print("p: Add portfolio")
+    print("q: Delete portfolio")
+    print("c: Change portfolio")
+    print("$: Check price")
+    print("x: Exit client")
+    choice = input("Enter a charaacter")
+    while choice != "x":
+        if choice == "a":
+            add_card_prompt()
+            choose_option_prompt()
+        elif choice == "d":
+            delete_card_prompt()
+        elif choice == "p":
+            create_portfolio_prompt()
+        elif choice == "c":
+            change_portfolio_prompt()
+        elif choice == "$":
+            check_price()
+        elif choice == "q":
+            delete_portfolio_prompt()
+
+
+
+def program_run():
+    login_or_signup_prompt()
+    #create_select_portfolio_prompt()
+    choose_option_prompt()
+
+
 #update_portfolios("jreiss1923")
 #update_portfolios_for_all_users()
 #schedule.every().day.at("07:00").do(update_portfolios_for_all_users)
-
-current_user_table = 17
-read_portfolio()
 #while True:
 #    schedule.run_pending()
 #    time.sleep(1)
