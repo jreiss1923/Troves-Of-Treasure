@@ -110,6 +110,20 @@ def change_portfolio(username, name):
     chosen_id = input("Which portfolio id would you like to use?")
     current_user_table = int(chosen_id)
 
+def read_portfolio():
+    mycursor.execute("select * from portfolio_card_assc where portfolio_id = " + str(current_user_table))
+    cards = mycursor.fetchall()
+    print("Portfolio number " + str(current_user_table))
+    if(len(cards) > 0):
+        for x in cards:
+            response = requests.get("http://api.tcgplayer.com/v1.32.0/catalog/products/" + str(x[1]), headers=headers).json()
+            card_name = response['results'][0]['name']
+            if(x[3] == 0):
+                print("There are " + str(x[2]) + " nonfoil copies of " + card_name + " in the portfolio")
+            else:
+                print("There are " + str(x[2]) + " foil copies of " + card_name + " in the portfolio")
+
+
 def get_card_info(card_name):
     card_info = search_card(card_name)
     s = ""
@@ -215,8 +229,8 @@ def start_function():
 #update_portfolios_for_all_users()
 #schedule.every().day.at("07:00").do(update_portfolios_for_all_users)
 
-start_function()
-
+current_user_table = 17
+read_portfolio()
 #while True:
 #    schedule.run_pending()
 #    time.sleep(1)
