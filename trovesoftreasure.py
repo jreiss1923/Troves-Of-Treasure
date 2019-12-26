@@ -19,6 +19,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 current_user_table = 0
+current_user = ""
 
 def bearer_token(PUBLIC_KEY, PRIVATE_KEY):
     bearer_headers = {
@@ -187,11 +188,36 @@ def get_portfolio_prices(cards):
 
     return portfolio_prices
 
-update_portfolios("jreiss1923")
-update_portfolios_for_all_users()
-schedule.every().day.at("07:00").do(update_portfolios_for_all_users)
+def login_or_signup(username, password):
+    global current_user
+    mycursor.execute("select * from user_info where username = '" + username + "' and password = md5('" + password + "')")
+    results = mycursor.fetchall()
+    if len(results) > 0:
+        current_user = username
+        print(current_user)
+    else:
+        response = input("The username or password was incorrect. Enter t to try again, or enter s to sign up.")
+        if(response == "t"):
+            start_function()
+        elif(response == "s"):
+            username = input("Please choose a username")
+            password = input("Please choose a password")
+            email = input("Please enter your email address")
+            mycursor.execute("insert into user_info(username, password, email) values('" + username + "', md5('" + password + "'), '" + email + "')")
+            mydb.commit()
 
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+def start_function():
+    username = input("Please input your username")
+    password = input("Please input your password")
+    login_or_signup(username, password)
+
+#update_portfolios("jreiss1923")
+#update_portfolios_for_all_users()
+#schedule.every().day.at("07:00").do(update_portfolios_for_all_users)
+
+start_function()
+
+#while True:
+#    schedule.run_pending()
+#    time.sleep(1)
 
