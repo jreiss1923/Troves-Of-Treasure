@@ -238,8 +238,8 @@ def update_portfolios(username):
 
     total_prices = get_portfolio_prices(portfolio_prices)
     for key in total_prices:
-        today = datetime.datetime.today()
-        today_formatted = today.strftime('%Y-%m-%d')
+        today = datetime.datetime.now()
+        today_formatted = today.strftime('%Y-%m-%d %H:%M:%S')
         mycursor.execute("insert into date_price_info(date_of_price, price, portfolio_id) values('" + today_formatted + "'," + str(total_prices[key]) + "," + str(key) + ")")
         mydb.commit()
 
@@ -266,7 +266,6 @@ def login_or_signup(username, password):
     results = mycursor.fetchall()
     if len(results) > 0:
         current_user = username
-        print(current_user)
     else:
         response = input("The username or password was incorrect. Enter t to try again, or enter s to sign up.")
         if(response == "t"):
@@ -279,6 +278,20 @@ def login_or_signup(username, password):
             mycursor.execute("insert into user_info(username, password, email) values('" + username + "', md5('" + password + "'), '" + email + "')")
             mydb.commit()
 
+def check_price():
+    global current_user_table
+    mycursor.execute("select * from date_price_info where portfolio_id=" + str(current_user_table))
+    prices = mycursor.fetchall()
+    mycursor.execute("select name from portfolio where id=" + str(current_user_table))
+    name = mycursor.fetchall()[0][0]
+    recent_price = None
+    recent_date = None
+    for x in prices:
+        if(recent_date == None or x[0] > recent_date):
+            recent_date = x[0]
+            recent_price = x[1]
+    print("Last updated at " + recent_date.strftime('%Y-%m-%d %H:%M:%S') + ": Value of portfolio '" + name + "' is $" + str(recent_price))
+
 def login_or_signup_prompt():
     username = input("Please input your username")
     password = input("Please input your password")
@@ -290,6 +303,7 @@ def choose_option_prompt():
     print("p: Add portfolio")
     print("q: Delete portfolio")
     print("r: Read portfolio")
+    print("$: Check portfolio price")
     print("c: Change portfolio")
     print("h: Help")
     print("x: Exit client")
@@ -320,6 +334,8 @@ def choose_option(choice):
         delete_portfolio_prompt()
     elif choice == "r":
         read_portfolio()
+    elif choice == "$":
+        check_price()
 
 def create_select_portfolio_prompt():
     global current_user, current_user_table
