@@ -25,7 +25,7 @@ DROP TABLE IF EXISTS `date_price_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `date_price_info` (
-  `date_of_price` date NOT NULL,
+  `date_of_price` datetime DEFAULT NULL,
   `price` float DEFAULT NULL,
   `portfolio_id` int(11) DEFAULT NULL,
   KEY `portfolio_id` (`portfolio_id`),
@@ -39,7 +39,7 @@ CREATE TABLE `date_price_info` (
 
 LOCK TABLES `date_price_info` WRITE;
 /*!40000 ALTER TABLE `date_price_info` DISABLE KEYS */;
-INSERT INTO `date_price_info` VALUES ('2019-12-24',324,13),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17),('2019-12-24',323.76,13),('2019-12-24',469.24,17);
+INSERT INTO `date_price_info` VALUES ('2019-12-27 22:06:30',23.14,39),('2019-12-27 22:06:30',33.06,40),('2019-12-27 22:06:32',214.53,37),('2019-12-27 22:09:01',23.14,39),('2019-12-27 22:09:01',33.06,40),('2019-12-27 22:09:03',214.53,37),('2019-12-27 22:09:36',23.14,39),('2019-12-27 22:09:36',33.06,40),('2019-12-27 22:09:46',214.53,37),('2019-12-27 22:17:47',23.14,39),('2019-12-27 22:17:47',33.06,40),('2019-12-27 22:17:50',214.53,37),('2019-12-27 22:18:21',23.14,39),('2019-12-27 22:18:21',33.06,40),('2019-12-27 22:18:23',214.53,37),('2019-12-27 22:19:00',23.14,39),('2019-12-27 22:19:00',33.06,40),('2019-12-27 22:19:04',214.53,37),('2019-12-27 22:19:28',23.14,39),('2019-12-27 22:19:28',33.06,40),('2019-12-27 22:19:32',214.53,37);
 /*!40000 ALTER TABLE `date_price_info` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -57,7 +57,7 @@ CREATE TABLE `portfolio` (
   PRIMARY KEY (`id`),
   KEY `user_name` (`user_name`),
   CONSTRAINT `portfolio_ibfk_1` FOREIGN KEY (`user_name`) REFERENCES `user_info` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=41 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,7 +66,7 @@ CREATE TABLE `portfolio` (
 
 LOCK TABLES `portfolio` WRITE;
 /*!40000 ALTER TABLE `portfolio` DISABLE KEYS */;
-INSERT INTO `portfolio` VALUES ('infect',1,'jreiss1923'),('infect',2,'jreiss1923'),('my cards',5,'jreiss1923'),('mycards',6,'jreiss1923'),('mycards',7,'jreiss1923'),('mycards',8,'jreiss1923'),('mycards',9,'jreiss1923'),('mycards',10,'jreiss1923'),('mycards',11,'jreiss1923'),('mycards',12,'jreiss1923'),('mycards',13,'jreiss1923'),('mycards',14,'jreiss1923'),('mycards',15,'jreiss1923'),('mycards',16,'jreiss1923'),('mycards',17,'jreiss1923'),('mycards',18,'jreiss1923'),('mycards',19,'jreiss1923'),('mycards',20,'jreiss1923'),('mycards',21,'jreiss1923'),('mycards',22,'jreiss1923'),('mycards',23,'jreiss1923'),('mycards',24,'jreiss1923'),('mycards',25,'jreiss1923'),('mycards',26,'jreiss1923'),('mycards',27,'jreiss1923'),('mycards',28,'jreiss1923'),('mycards',29,'jreiss1923'),('mycards',30,'jreiss1923');
+INSERT INTO `portfolio` VALUES ('Infect',37,'jreiss1923'),('Trades',39,'jreiss'),('Draft Chaff',40,'jreiss');
 /*!40000 ALTER TABLE `portfolio` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -94,7 +94,7 @@ CREATE TABLE `portfolio_card_assc` (
 
 LOCK TABLES `portfolio_card_assc` WRITE;
 /*!40000 ALTER TABLE `portfolio_card_assc` DISABLE KEYS */;
-INSERT INTO `portfolio_card_assc` VALUES (17,28579,4,0),(13,28579,4,1),(17,28579,4,1);
+INSERT INTO `portfolio_card_assc` VALUES (37,28579,2,0),(37,179490,1,0),(37,98387,1,0),(37,92832,3,0),(37,92831,3,0),(39,34698,1,0),(40,198356,1,0);
 /*!40000 ALTER TABLE `portfolio_card_assc` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -119,7 +119,7 @@ CREATE TABLE `user_info` (
 
 LOCK TABLES `user_info` WRITE;
 /*!40000 ALTER TABLE `user_info` DISABLE KEYS */;
-INSERT INTO `user_info` VALUES ('jreiss1923','188239ced50cf7e51c6397aa425c76e5','joshua.reiss2@gmail.com');
+INSERT INTO `user_info` VALUES ('jreiss','188239ced50cf7e51c6397aa425c76e5','joshua.reiss2@gmail.com'),('jreiss1923','188239ced50cf7e51c6397aa425c76e5','joshua.reiss2@gmail.com');
 /*!40000 ALTER TABLE `user_info` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -132,4 +132,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2019-12-24 15:33:48
+-- Dump completed on 2019-12-27 22:21:23
