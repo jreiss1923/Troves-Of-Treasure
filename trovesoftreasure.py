@@ -273,6 +273,7 @@ def login_or_signup(username, password):
             login_or_signup_prompt()
         elif(response == "s"):
             username = input("Please choose a username")
+            current_user = username
             password = input("Please choose a password")
             email = input("Please enter your email address")
             mycursor.execute("insert into user_info(username, password, email) values('" + username + "', md5('" + password + "'), '" + email + "')")
