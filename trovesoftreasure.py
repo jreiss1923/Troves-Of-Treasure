@@ -110,7 +110,6 @@ def change_portfolio(username, name):
             portfolio_count = mycursor.fetchall()[0][0]
             mycursor.execute("select name from portfolio where id=" + str(x[1]))
             portfolio_name = mycursor.fetchall()[0][0]
-            print(portfolio_name)
             print("portfolio id " + str(x[1]) + " has " + str(portfolio_count) + " entries and name " + portfolio_name)
     chosen_id = input("Which portfolio id would you like to use?")
     current_user_table = int(chosen_id)
@@ -121,6 +120,7 @@ def change_portfolio_prompt():
     change_portfolio(current_user, name)
 
 def read_portfolio():
+    delete_bad_entries()
     mycursor.execute("select * from portfolio_card_assc where portfolio_id = " + str(current_user_table))
     cards = mycursor.fetchall()
     print("Portfolio number " + str(current_user_table))
@@ -132,6 +132,15 @@ def read_portfolio():
                 print("There are " + str(x[2]) + " nonfoil copies of " + card_name + " (card id " + str(x[1]) + ")" + " in the portfolio")
             else:
                 print("There are " + str(x[2]) + " foil copies of " + card_name + " (card id " + str(x[1]) + ")" + " in the portfolio")
+
+def delete_bad_entries():
+    mycursor.execute("select * from portfolio_card_assc where portfolio_id = " + str(current_user_table))
+    cards = mycursor.fetchall()
+    for x in cards:
+        response = requests.get("http://api.tcgplayer.com/v1.32.0/catalog/products/" + str(x[1]), headers=headers).json()
+        if(response['success'] == False):
+            delete_card(x[1], x[3], x[2])
+
 
 def get_card_info(card_name):
     card_info = search_card(card_name)
@@ -160,6 +169,7 @@ def get_group_names(groupIdStr):
 
 #add card to current portfolio
 def add_card(card_id, foiled, num_cards):
+    global current_user_table
     mycursor.execute("insert into portfolio_card_assc(portfolio_id, card_id, card_count, foiled) values(" + str(current_user_table) + "," + str(card_id) + "," + str(num_cards) + "," + str(foiled) + ")")
     mydb.commit()
 
@@ -240,11 +250,12 @@ def get_portfolio_prices(cards):
         if len(cards[key]) != 0:
             price = 0
             for portfolio_tuple in cards[key]:
-                if(portfolio_tuple[2] == 0):
-                    correct_pos = card_foiling_no_comma(str(portfolio_tuple[0])).index(False)
-                else:
-                    correct_pos = card_foiling_no_comma(str(portfolio_tuple[0])).index(True)
-                price += get_card_prices_no_comma(str(portfolio_tuple[0]))[correct_pos] * portfolio_tuple[1]
+                if(len(get_card_prices_no_comma(str(portfolio_tuple[0]))) != 0):
+                    if(portfolio_tuple[2] == 0 and portfolio_tuple[0] != 0):
+                        correct_pos = card_foiling_no_comma(str(portfolio_tuple[0])).index(False)
+                    else:
+                        correct_pos = card_foiling_no_comma(str(portfolio_tuple[0])).index(True)
+                    price += get_card_prices_no_comma(str(portfolio_tuple[0]))[correct_pos] * portfolio_tuple[1]
             portfolio_prices[key] = price
 
     return portfolio_prices
@@ -277,32 +288,65 @@ def choose_option_prompt():
     print("d: Delete card")
     print("p: Add portfolio")
     print("q: Delete portfolio")
+    print("r: Read portfolio")
     print("c: Change portfolio")
-    print("$: Check price")
+    print("h: Help")
     print("x: Exit client")
-    choice = input("Enter a charaacter")
+    choice = input("Enter a character")
     while choice != "x":
-        if choice == "a":
-            add_card_prompt()
-            choose_option_prompt()
-        elif choice == "d":
-            delete_card_prompt()
-        elif choice == "p":
-            create_portfolio_prompt()
-        elif choice == "c":
-            change_portfolio_prompt()
-        elif choice == "$":
-            check_price()
-        elif choice == "q":
-            delete_portfolio_prompt()
+        if choice == "h":
+            print("a: Add card")
+            print("d: Delete card")
+            print("p: Add portfolio")
+            print("q: Delete portfolio")
+            print("r: Read portfolio")
+            print("c: Change portfolio")
+            print("h: Help")
+            print("x: Exit client")
+        choose_option(choice)
+        choice = input("Enter a character")
 
+def choose_option(choice):
+    if choice == "a":
+        add_card_prompt()
+    elif choice == "d":
+        delete_card_prompt()
+    elif choice == "p":
+        create_portfolio_prompt()
+    elif choice == "c":
+        change_portfolio_prompt()
+    elif choice == "q":
+        delete_portfolio_prompt()
+    elif choice == "r":
+        read_portfolio()
+
+def create_select_portfolio_prompt():
+    global current_user, current_user_table
+    mycursor.execute("select * from portfolio where user_name='" + current_user + "'")
+    all_portfolios = mycursor.fetchall()
+    if len(all_portfolios) > 0:
+        for x in all_portfolios:
+            mycursor.execute("select count(*) from portfolio_card_assc where portfolio_id=" + str(x[1]))
+            portfolio_count = mycursor.fetchall()[0][0]
+            mycursor.execute("select name from portfolio where id=" + str(x[1]))
+            portfolio_name = mycursor.fetchall()[0][0]
+            print("portfolio id " + str(x[1]) + " has " + str(portfolio_count) + " entries and name " + portfolio_name)
+        change_portfolio_prompt()
+    else:
+        print("You do not have any portfolios.")
+        create_portfolio_prompt()
+        mycursor.execute("select id from portfolio")
+        current_user_table = mycursor.fetchall()[0][0]
 
 
 def program_run():
     login_or_signup_prompt()
-    #create_select_portfolio_prompt()
+    update_portfolios_for_all_users()
+    create_select_portfolio_prompt()
     choose_option_prompt()
+    update_portfolios_for_all_users()
 
+program_run()
 
 #update_portfolios("jreiss1923")
 #update_portfolios_for_all_users()
