@@ -169,9 +169,10 @@ def get_group_names(groupIdStr):
 
 #add card to current portfolio
 def add_card(card_id, foiled, num_cards):
-    global current_user_table
+    global current_user_table, current_user
     mycursor.execute("insert into portfolio_card_assc(portfolio_id, card_id, card_count, foiled) values(" + str(current_user_table) + "," + str(card_id) + "," + str(num_cards) + "," + str(foiled) + ")")
     mydb.commit()
+    update_portfolios(current_user)
 
 def add_card_prompt():
     card = input("What is the name of the card?")
@@ -186,9 +187,10 @@ def add_card_prompt():
     add_card(id, foiled, num)
 
 def delete_card(card_id, foiled, num_cards):
-    global current_user_table
+    global current_user_table, current_user
     mycursor.execute("delete from portfolio_card_assc where portfolio_id =" + str(current_user_table) + " and card_id =" + str(card_id) + " and card_count = " + str(num_cards) + " and foiled = " + str(foiled) + " limit 1")
     mydb.commit()
+    update_portfolios(current_user)
 
 def delete_card_prompt():
     read_portfolio()
@@ -305,6 +307,7 @@ def choose_option_prompt():
     print("r: Read portfolio")
     print("$: Check portfolio price")
     print("c: Change portfolio")
+    print("s: Portfolio statistics")
     print("h: Help")
     print("x: Exit client")
     choice = input("Enter a character")
@@ -336,6 +339,8 @@ def choose_option(choice):
         read_portfolio()
     elif choice == "$":
         check_price()
+    elif choice == "s":
+        get_portfolio_stats()
 
 def create_select_portfolio_prompt():
     global current_user, current_user_table
@@ -355,13 +360,57 @@ def create_select_portfolio_prompt():
         mycursor.execute("select id from portfolio")
         current_user_table = mycursor.fetchall()[0][0]
 
+def get_portfolio_stats():
+    global current_user_table
+    mycursor.execute("select date_of_price from date_price_info where portfolio_id = " + str(current_user_table))
+    list_of_dates = mycursor.fetchall()
+    recent_date = get_recent_date(list_of_dates)
+    recent_price = get_price_from_date(recent_date)
+    last_date = get_last_date(list_of_dates)
+    last_price = get_price_from_date(last_date)
+    print("At " + last_date.strftime('%Y-%m-%d %H:%M:%S') + ", your portfolio was worth $" + str(last_price) + " for " + percentage_change_string(last_price, recent_price))
+    last_week_date = None
+    last_month_date = None
+    last_year_date = None
+    last_price = None
+    last_week_price = None
+    last_month_price = None
+    last_year_price = None
+
+def get_last_date(list_of_dates):
+    last_date = None
+    for x in list_of_dates:
+        if last_date is None or x[0] < last_date:
+            last_date = x[0]
+    return last_date
+
+def get_recent_date(list_of_dates):
+    recent_date = None
+    for x in list_of_dates:
+        if recent_date is None or x[0] > recent_date:
+            recent_date = x[0]
+    return recent_date
+
+def get_price_from_date(date):
+    global current_user_table
+    mycursor.execute("select price from date_price_info where portfolio_id =" + str(current_user_table) + " and date_of_price = '" + date.strftime('%Y-%m-%d %H:%M:%S') + "'")
+    return mycursor.fetchall()[0][0]
+
+def percentage_change_string(past_price, recent_price):
+    output_string = ""
+    if past_price < recent_price:
+        output_string += "an increase of " + str(round((recent_price - past_price) / past_price * 100, 2)) + " percent."
+    elif past_price > recent_price:
+        output_string += "a decrease of " + str(round((recent_price - past_price) / past_price * 100, 2)) + " percent."
+    else:
+        output_string += "no gain."
+    return output_string
 
 def program_run():
     login_or_signup_prompt()
     update_portfolios_for_all_users()
     create_select_portfolio_prompt()
     choose_option_prompt()
-    update_portfolios_for_all_users()
 
 program_run()
 
