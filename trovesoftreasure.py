@@ -369,13 +369,15 @@ def get_portfolio_stats():
     last_date = get_last_date(list_of_dates)
     last_price = get_price_from_date(last_date)
     print("At " + last_date.strftime('%Y-%m-%d %H:%M:%S') + ", your portfolio was worth $" + str(last_price) + " for " + percentage_change_string(last_price, recent_price))
-    last_week_date = None
-    last_month_date = None
-    last_year_date = None
-    last_price = None
-    last_week_price = None
-    last_month_price = None
-    last_year_price = None
+    last_week_date = get_last_week_date(list_of_dates, recent_date)
+    last_week_price = get_price_from_date(last_week_date)
+    print("One week ago, your portfolio was worth $" + str(last_week_price) + " for " + percentage_change_string(last_week_price, recent_price))
+    last_month_date = get_last_month_date(list_of_dates, recent_date)
+    last_month_price = get_price_from_date(last_month_date)
+    print("One month ago, your portfolio was worth $" + str(last_month_price) + " for " + percentage_change_string(last_month_price, recent_price))
+    last_year_date = get_last_year_date(list_of_dates, recent_date)
+    last_year_price = get_price_from_date(last_year_date)
+    print("One year ago, your portfolio was worth $" + str(last_year_price) + " for " + percentage_change_string(last_year_price, recent_price))
 
 def get_last_date(list_of_dates):
     last_date = None
@@ -405,6 +407,42 @@ def percentage_change_string(past_price, recent_price):
     else:
         output_string += "no gain."
     return output_string
+
+def get_last_week_date(list_of_dates, recent_date):
+    week_list = []
+    for x in list_of_dates:
+        difference = recent_date - x[0]
+        if difference.days >= 7:
+            temp = [x[0]]
+            week_list.append(temp)
+    if len(week_list) > 0:
+        return get_recent_date(week_list)
+    else:
+        return get_last_date(list_of_dates)
+
+def get_last_month_date(list_of_dates, recent_date):
+    month_list = []
+    for x in list_of_dates:
+        difference = recent_date - x[0]
+        if difference.days >= 30:
+            temp = [x[0]]
+            month_list.append(temp)
+    if len(month_list) > 0:
+        return get_recent_date(month_list)
+    else:
+        return get_last_date(list_of_dates)
+
+def get_last_year_date(list_of_dates, recent_date):
+    year_list = []
+    for x in list_of_dates:
+        difference = recent_date - x[0]
+        if difference.days >= 365:
+            temp = [x[0]]
+            year_list.append(temp)
+    if len(year_list) > 0:
+        return get_recent_date(year_list)
+    else:
+        return get_last_date(list_of_dates)
 
 def program_run():
     login_or_signup_prompt()
