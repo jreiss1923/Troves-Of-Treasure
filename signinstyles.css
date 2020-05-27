@@ -23,15 +23,27 @@ ul {
 }
 
 li {
+    background-color: #424242;
+}
+
+li:hover {
+    background-color: #000000;
+}
+
+button {
+    all: unset;
     float: left;
     display: block;
+    background-color: #424242;
     color: white;
     text-align: center;
     padding: 15px 50px;
     text-decoration: none;
+    border: none;
+    cursor: pointer;
 }
 
-li:hover {
+button:hover {
     background-color: #000000;
     transition: 0.6s;
 }
