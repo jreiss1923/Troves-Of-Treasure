@@ -22,19 +22,23 @@ ul {
     background-color: #424242;
 }
 
-li {
-    background-color: #424242;
-}
-
 li:hover {
     background-color: #000000;
+}
+
+.signout {
+    float: right;
+    background-color: #72ba85;
+}
+
+.signout button {
+    background-color: #72ba85;
 }
 
 .header button {
     all: unset;
     float: left;
     display: block;
-    background-color: #424242;
     color: white;
     text-align: center;
     padding: 15px 50px;
@@ -43,9 +47,13 @@ li:hover {
     cursor: pointer;
 }
 
-button:hover {
+.left button {
+    background-color: #424242;
+}
+
+.header button:hover {
     background-color: #000000;
-    transition: 0.6s;
+    transition: 0.4s;
 }
 
 .search {
@@ -64,14 +72,14 @@ button:hover {
     top: 20%;
     left: 13%;
     font-size: 0;
-    
+
 }
 
 .verticalhorizontal {
     position: relative;
     max-width: 100%;
     max-height: 100%;
-    
+
 }
 
 .changegraph button {
