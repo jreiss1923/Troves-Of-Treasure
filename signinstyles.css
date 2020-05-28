@@ -31,10 +31,6 @@ li:hover {
     background-color: #72ba85;
 }
 
-.signout button {
-    background-color: #72ba85;
-}
-
 .header button {
     all: unset;
     float: left;
@@ -49,6 +45,10 @@ li:hover {
 
 .left button {
     background-color: #424242;
+}
+
+.left button:focus {
+    background-color: #000000;
 }
 
 .header button:hover {
@@ -100,12 +100,12 @@ li:hover {
 }
 
 .changegraph button:hover {
-    background-color: #000000;
+    background-color: #72ba85;
     transition: 0.4s;
 }
 
 .changegraph button:focus {
-    background-color: #000000;
+    background-color: #72ba85;
 }
 
 .stockimage {
