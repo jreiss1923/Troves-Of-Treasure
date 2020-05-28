@@ -26,14 +26,24 @@ li:hover {
     background-color: #000000;
 }
 
-.signout {
+.right {
+    text-align: right;
+}
+
+.rightheader {
     float: right;
+}
+
+.delete {
+    background-color: red;
+}
+
+.signout {
     background-color: #72ba85;
 }
 
 .header button {
     all: unset;
-    float: left;
     display: block;
     color: white;
     text-align: center;
@@ -41,9 +51,15 @@ li:hover {
     text-decoration: none;
     border: none;
     cursor: pointer;
+    margin: none;
+}
+
+.left {
+    border: 3px solid white;
 }
 
 .left button {
+    float: left;
     background-color: #424242;
 }
 
